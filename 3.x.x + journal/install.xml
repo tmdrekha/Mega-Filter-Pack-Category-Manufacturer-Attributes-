@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Tmd CMA Filter</name>
+	<id>Tmd CMA Filter</id>
+	<version>1.0</version>
+	<code>#LC</code>
+	<author>TMD(opencartextensions.in)</author>
+	<link>http://opencartextensions.in/</link>
+	
+	<file path="admin/controller/common/column_left.php">    
+		<operation error="skip">
+			<search><![CDATA[// Catalog]]></search>
+			<add position="before"><![CDATA[
+			$module_tmd_cmafilter_status = $this->config->get('module_tmd_cmafilter_status');
+			if($module_tmd_cmafilter_status == 1 ){
+				if ($this->user->hasPermission('access', 'extension/module/tmd_cmafilter')) {		
+					$data['menus'][] = array(
+						'id'       => 'menu-dashboard',
+						'icon'	   => 'fa-filter',
+						'name'	   => $this->language->get('text_tmd_cmafilter'),
+						'href'     => $this->url->link('extension/module/tmd_cmafilter', 'user_token=' . $this->session->data['user_token'], true),
+						'children' => array()
+					);		
+				}
+			}
+			]]></add>
+		</operation> 				
+	</file>
+		
+	<file path="admin/language/*/common/column_left.php">    
+		<operation error="skip">
+			<search><![CDATA[// Text]]></search>
+			<add position="after"><![CDATA[
+			$_['text_tmd_cmafilter']                 = 'TMD CMA Filter';
+			]]></add>
+		</operation> 	
+	</file>
+
+	<file path="catalog/model/catalog/product.php">    
+		<operation error="skip">
+			<search><![CDATA[$sql .= " LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			if (!empty($data['filter_first_level'])) {
+				if (!empty($data['filter_second_level'])) {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "category_path cpf ON (cpf.category_id = p2c2.category_id)";
+				} else if (!empty($data['filter_third_level'])) {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "category_path cpf ON (cpf.category_id = p2c2.category_id)";
+				} else {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id)";
+				}
+			}
+			
+			if (!empty($data['filter_model'])) {
+				$sql .= " LEFT JOIN " . DB_PREFIX . "product_attribute pa on (p.product_id = pa.product_id)";
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 
+		<operation error="skip">
+			<search><![CDATA[$sql .= " LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";]]></search>
+			<add position="after"><![CDATA[
+			// TMD CMA Filter
+			if (!empty($data['filter_first_level'])) {
+				if (!empty($data['filter_second_level'])) {
+					$sql .= " AND cpf.path_id = '" . (int)$data['filter_second_level'] . "'";
+				} else if (!empty($data['filter_third_level'])) {
+					$sql .= " AND cpf.path_id = '" . (int)$data['filter_third_level'] . "'";
+				} else {
+					$sql .= " AND p2c2.category_id = '" . (int)$data['filter_first_level'] . "'";
+				}
+			}
+			
+			if (!empty($data['filter_brand'])) {
+				$sql .= " AND p.manufacturer_id = '" . (int)$data['filter_brand'] . "'";
+			}
+
+			if (!empty($data['filter_model'])) {
+				$sql .= " AND pa.attribute_id = '" . (int)$data['filter_model'] . "'";
+			}
+
+			if (!empty($data['filter_search'])) {
+				$sql .= " AND pd.name LIKE '%" . $this->db->escape($data['filter_search']) . "%'";
+			}
+			if (!empty($data['filter_price_from'])) {
+				$sql .= " AND p.price >= '" . $data['filter_price_from'] . "'";
+			}
+
+			if (!empty($data['filter_price_to'])) {
+				$sql .= " AND p.price <= '" . $data['filter_price_to'] . "'";
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation>				
+	</file>
+
+	<file path="catalog/controller/product/search.php">    
+		<operation error="skip">
+			<search index="0"><![CDATA[if (isset($this->request->get['sort'])) {]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			if (isset($this->request->get['filter_search'])) {
+				$filter_search = $this->request->get['filter_search'];
+			} else {
+				$filter_search = '';
+			}
+
+			if (isset($this->request->get['filter_brand'])) {
+				$filter_brand = $this->request->get['filter_brand'];
+			} else {
+				$filter_brand = '';
+			}
+
+			if (isset($this->request->get['filter_first_level'])) {
+				$filter_first_level = $this->request->get['filter_first_level'];
+			} else {
+				$filter_first_level = '';
+			}
+
+			if (isset($this->request->get['filter_second_level'])) {
+				$filter_second_level = $this->request->get['filter_second_level'];
+			} else {
+				$filter_second_level = '';
+			}
+
+			if (isset($this->request->get['filter_third_level'])) {
+				$filter_third_level = $this->request->get['filter_third_level'];
+			} else {
+				$filter_third_level = '';
+			}
+
+			if (isset($this->request->get['filter_model'])) {
+				$filter_model = $this->request->get['filter_model'];
+			} else {
+				$filter_model = '';
+			}
+
+			if (!empty($this->request->get['filter_range'])) {
+				$price_info = explode(';', $this->request->get['filter_range']);
+				$filter_price_from = $price_info[0];
+				$filter_price_to = $price_info[1];
+			} else {
+				$filter_price_from = false;
+				$filter_price_to = false;
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 
+		<operation error="skip">
+			<search><![CDATA[$url = '';]]></search>
+			<add position="after"><![CDATA[
+			// TMD CMA Filter
+			if (isset($this->request->get['filter_search'])) {
+				$url .= '&filter_search=' . $this->request->get['filter_search'];
+			}
+
+			if (isset($this->request->get['filter_brand'])) {
+				$url .= '&filter_brand=' . $this->request->get['filter_brand'];
+			}
+
+			if (isset($this->request->get['filter_first_level'])) {
+				$url .= '&filter_first_level=' . $this->request->get['filter_first_level'];
+			}
+
+			if (isset($this->request->get['filter_second_level'])) {
+				$url .= '&filter_second_level=' . $this->request->get['filter_second_level'];
+			}
+
+			if (isset($this->request->get['filter_third_level'])) {
+				$url .= '&filter_third_level=' . $this->request->get['filter_third_level'];
+			}
+
+			if (isset($this->request->get['filter_model'])) {
+				$url .= '&filter_model=' . $this->request->get['filter_model'];
+			}
+
+			if (isset($this->request->get['filter_range'])) {
+				$url .= '&filter_range=' . $this->request->get['filter_range'];
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA['filter_sub_category' => $sub_category,]]></search>
+			<add position="after"><![CDATA[
+			// TMD CMA Filter
+			'filter_search'        => $filter_search,
+			'filter_brand'         => $filter_brand,
+			'filter_first_level'   => $filter_first_level,
+			'filter_second_level'  => $filter_second_level,
+			'filter_third_level'   => $filter_third_level,
+			'filter_model'         => $filter_model,
+			'filter_price_from'    => $filter_price_from,
+			'filter_price_to'      => $filter_price_to,
+			// TMD CMA Filter
+			]]></add>
+		</operation>	
+		<operation error="skip">
+			<search><![CDATA[$data['search'] = $search;]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			$data['filter_search']       = $filter_search;
+			$data['filter_brand']        = $filter_brand;
+			$data['filter_first_level']  = $filter_first_level;
+			$data['filter_second_level'] = $filter_second_level;
+			$data['filter_third_level']  = $filter_third_level;
+			$data['filter_model']        = $filter_model;
+			$data['filter_price_from']   = $filter_price_from;
+			$data['filter_price_to']     = $filter_price_to;
+			// TMD CMA Filter
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if (isset($this->request->get['search']) || isset($this->request->get['tag'])) {]]></search>
+			<add position="replace"><![CDATA[
+			// TMD CMA Filter
+			if (isset($this->request->get['search']) || isset($this->request->get['tag']) || isset($this->request->get['filter_first_level']) || isset($this->request->get['filter_second_level']) || isset($this->request->get['filter_third_level']) || isset($this->request->get['filter_brand']) || isset($this->request->get['filter_model']) || isset($this->request->get['filter_search']) || isset($this->request->get['filter_range'])) {
+			// TMD CMA Filter
+			]]></add>
+		</operation>			
+	</file>
+
+	<file path="catalog/model/journal3/filter.php">    
+		<operation error="skip">
+			<search index="0"><![CDATA[if ($query !== 'category' && (Arr::get($filter_data, 'categories') || Arr::get($filter_data, 'filter_category_id'))) {]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			if (!empty(Arr::get($filter_data, 'filter_first_level'))) {
+				if (!empty(Arr::get($filter_data, 'filter_second_level'))) {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "category_path cpf ON (cpf.category_id = p2c2.category_id)";
+				} else if (!empty(Arr::get($filter_data, 'filter_third_level'))) {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "category_path cpf ON (cpf.category_id = p2c2.category_id)";
+				} else {
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_to_category p2c2 ON (p2c2.product_id = p.product_id)";
+				}
+			}
+			
+			if (!empty(Arr::get($filter_data, 'filter_model'))) {
+				$sql .= " LEFT JOIN `" . DB_PREFIX . "product_attribute` paf on (p.product_id = paf.product_id)";
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 
+
+		<operation error="skip">
+			<search><![CDATA[if ($query !== 'manufacturer') {]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			if (!empty(Arr::get($filter_data, 'filter_first_level'))) {
+				if (!empty(Arr::get($filter_data, 'filter_second_level'))) {
+					$sql .= " AND cpf.path_id = '" . (int)$filter_data['filter_second_level'] . "'";
+				} else if (!empty(Arr::get($filter_data, 'filter_third_level'))) {
+					$sql .= " AND cpf.path_id = '" . (int)$filter_data['filter_third_level'] . "'";
+				} else {
+					$sql .= " AND p2c2.category_id = '" . (int)$filter_data['filter_first_level'] . "'";
+				}
+			}
+			
+			if (!empty(Arr::get($filter_data, 'filter_brand'))) {
+				$sql .= " AND p.manufacturer_id = '" . (int)$filter_data['filter_brand'] . "'";
+			}
+
+			if (!empty(Arr::get($filter_data, 'filter_model'))) {
+				$sql .= " AND paf.attribute_id = '" . (int)$filter_data['filter_model'] . "'";
+			}
+
+			if (!empty(Arr::get($filter_data, 'filter_search'))) {
+				$sql .= " AND pd.name LIKE '%" . $this->db->escape($filter_data['filter_search']) . "%'";
+			}
+			if (!empty($filter_data['filter_price_from'])) {
+				$sql .= " AND p.price >= '" . $filter_data['filter_price_from'] . "'";
+			}
+
+			if (!empty($filter_data['filter_price_to'])) {
+				$sql .= " AND p.price <= '" . $filter_data['filter_price_to'] . "'";
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation>				
+	</file>
+
+	<file path="catalog/view/theme/default/template/product/search.twig">    
+		<operation error="skip">
+			<search><![CDATA[var search = $('#content input[name=\'search\']').prop('value');]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			var filter_first_level = $('select[name=\'filter_first_level\']').val();
+
+			if (filter_first_level!='0') {
+				url += '&filter_first_level=' + encodeURIComponent(filter_first_level);
+			}
+
+			var filter_second_level = $('select[name=\'filter_second_level\']').val();
+
+			if (filter_second_level!='0') {
+				url += '&filter_second_level=' + encodeURIComponent(filter_second_level);
+			}
+
+			var filter_third_level = $('select[name=\'filter_third_level\']').val();
+
+			if (filter_third_level!='0') {
+				url += '&filter_third_level=' + encodeURIComponent(filter_third_level);
+			}
+
+			var filter_brand = $('select[name=\'filter_brand\']').val();
+
+			if (filter_brand!='0') {
+				url += '&filter_brand=' + encodeURIComponent(filter_brand);
+			}
+
+			var filter_model = $('select[name=\'filter_model\']').val();
+
+			if (filter_model!='0') {
+				url += '&filter_model=' + encodeURIComponent(filter_model);
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 				
+	</file>
+
+	<file path="catalog/view/theme/journal2/template/product/search.twig">    
+		<operation error="skip">
+			<search><![CDATA[var search = $('#content input[name=\'search\']').prop('value');]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			var filter_first_level = $('select[name=\'filter_first_level\']').val();
+
+			if (filter_first_level!='0') {
+				url += '&filter_first_level=' + encodeURIComponent(filter_first_level);
+			}
+
+			var filter_second_level = $('select[name=\'filter_second_level\']').val();
+
+			if (filter_second_level!='0') {
+				url += '&filter_second_level=' + encodeURIComponent(filter_second_level);
+			}
+
+			var filter_third_level = $('select[name=\'filter_third_level\']').val();
+
+			if (filter_third_level!='0') {
+				url += '&filter_third_level=' + encodeURIComponent(filter_third_level);
+			}
+
+			var filter_brand = $('select[name=\'filter_brand\']').val();
+
+			if (filter_brand!='0') {
+				url += '&filter_brand=' + encodeURIComponent(filter_brand);
+			}
+
+			var filter_model = $('select[name=\'filter_model\']').val();
+
+			if (filter_model!='0') {
+				url += '&filter_model=' + encodeURIComponent(filter_model);
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 				
+	</file>
+
+	<file path="catalog/view/theme/journal3/template/product/search.twig">    
+		<operation error="skip">
+			<search><![CDATA[var search = $('#content input[name=\'search\']').prop('value');]]></search>
+			<add position="before"><![CDATA[
+			// TMD CMA Filter
+			var filter_first_level = $('select[name=\'filter_first_level\']').val();
+
+			if (filter_first_level!='0') {
+				url += '&filter_first_level=' + encodeURIComponent(filter_first_level);
+			}
+
+			var filter_second_level = $('select[name=\'filter_second_level\']').val();
+
+			if (filter_second_level!='0') {
+				url += '&filter_second_level=' + encodeURIComponent(filter_second_level);
+			}
+
+			var filter_third_level = $('select[name=\'filter_third_level\']').val();
+
+			if (filter_third_level!='0') {
+				url += '&filter_third_level=' + encodeURIComponent(filter_third_level);
+			}
+
+			var filter_brand = $('select[name=\'filter_brand\']').val();
+
+			if (filter_brand!='0') {
+				url += '&filter_brand=' + encodeURIComponent(filter_brand);
+			}
+	
+			var filter_model = $('select[name=\'filter_model\']').val();
+
+			if (filter_model!='0') {
+				url += '&filter_model=' + encodeURIComponent(filter_model);
+			}
+			// TMD CMA Filter
+			]]></add>
+		</operation> 				
+	</file>
+</modification>

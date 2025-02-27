@@ -1,0 +1,428 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="float-end">
+				<button type="submit" form="form-tmd-megafilter" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>
+				<a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ol class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+				<li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ol>
+		</div>
+	</div>
+	
+	{{ getkeyform }}
+	
+	<div class="container-fluid">
+		<div class="card">
+			<div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
+			<div class="card-body">
+				<form id="form-tmd-megafilter" action="{{ save }}" method="post" data-oc-toggle="ajax">
+					<ul class="nav nav-tabs">
+						<li class="nav-item"><a href="#tab-general" data-bs-toggle="tab" class="nav-link active"><i class="fa fa-cog"></i> {{ tab_general }}</a></li>
+						<li class="nav-item"><a href="#tab-language" data-bs-toggle="tab" class="nav-link"><i class="fa fa-language"></i> {{ tab_language }}</a></li>
+						<li class="nav-item"><a href="#tab-color" data-bs-toggle="tab" class="nav-link"><i class="fa fa-paint-brush"></i> {{ tab_color }}</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-general">
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-status">{{ entry_status }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_status" id="input-status" class="form-select">
+								{% if module_tmd_cmafilter_status %}
+								<option value="1" selected="selected">{{ text_enabled }}</option>
+								<option value="0">{{ text_disabled }}</option>
+								{% else %}
+								<option value="1">{{ text_enabled }}</option>
+								<option value="0" selected="selected">{{ text_disabled }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-category">{{ entry_category }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_category" id="input-category" class="form-select">
+								{% if module_tmd_cmafilter_category == "yes" %}
+								<option value="yes" selected="selected">{{ text_yes }}</option>
+								<option value="no">{{ text_no }}</option>
+								{% else %}
+								<option value="yes">{{ text_yes }}</option>
+								<option value="no" selected="selected">{{ text_no }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+				
+						<div class="row mb-3" id="sub_cate">
+						  <label class="col-sm-2 col-form-label" for="input-sb_category">{{ entry_sb_category }}</label>
+						  <div class="col-sm-10">
+							<select name="module_tmd_cmafilter_sub_category" id="input-sb_category" class="form-select">
+							  {% if module_tmd_cmafilter_sub_category == "yes" %}
+							  <option value="yes" selected="selected">{{ text_yes }}</option>
+							  <option value="no">{{ text_no }}</option>
+							  {% else %}
+							  <option value="yes">{{ text_yes }}</option>
+							  <option value="no" selected="selected">{{ text_no }}</option>
+							  {% endif %}
+							</select>
+						  </div>
+						</div>
+					
+						<div class="row mb-3" id="sub_sub_cate">
+						  <label class="col-sm-2 col-form-label" for="input-ssb_category">{{ entry_ssb_category }}</label>
+						  <div class="col-sm-10">
+							<select name="module_tmd_cmafilter_sub_sub_category" id="input-ssb_category" class="form-select">
+							  {% if module_tmd_cmafilter_sub_sub_category == "yes" %}
+							  <option value="yes" selected="selected">{{ text_yes }}</option>
+							  <option value="no">{{ text_no }}</option>
+							  {% else %}
+							  <option value="yes">{{ text_yes }}</option>
+							  <option value="no" selected="selected">{{ text_no }}</option>
+							  {% endif %}
+							</select>
+						  </div>
+						</div>
+				
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-brand">{{ entry_brand }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_brand" id="input-brand" class="form-select">
+								{% if module_tmd_cmafilter_brand == "yes" %}
+								<option value="yes" selected="selected">{{ text_yes }}</option>
+								<option value="no">{{ text_no }}</option>
+								{% else %}
+								<option value="yes">{{ text_yes }}</option>
+								<option value="no" selected="selected">{{ text_no }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-attribute">{{ entry_attributes }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_attribute" id="input-attribute" class="form-select">
+								{% if module_tmd_cmafilter_attribute == "yes" %}
+								<option value="yes" selected="selected">{{ text_yes }}</option>
+								<option value="no">{{ text_no }}</option>
+								{% else %}
+								<option value="yes">{{ text_yes }}</option>
+								<option value="no" selected="selected">{{ text_no }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-search_input">{{ entry_search_input }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_search_input" id="input-search_input" class="form-select">
+								{% if module_tmd_cmafilter_search_input == "yes" %}
+								<option value="yes" selected="selected">{{ text_yes }}</option>
+								<option value="no">{{ text_no }}</option>
+								{% else %}
+								<option value="yes">{{ text_yes }}</option>
+								<option value="no" selected="selected">{{ text_no }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-price-range">{{ entry_price_range }}</label>
+							<div class="col-sm-10">
+							  <select name="module_tmd_cmafilter_price_range" id="input-price-range" class="form-select">
+								{% if module_tmd_cmafilter_price_range == "1" %}
+								<option value="1" selected="selected">{{ text_yes }}</option>
+								<option value="0">{{ text_no }}</option>
+								{% else %}
+								<option value="1">{{ text_yes }}</option>
+								<option value="0" selected="selected">{{ text_no }}</option>
+								{% endif %}
+							  </select>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label" for="input-price-range">{{ entry_default_price }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								<div class="col-sm-6">
+								  <div class="input-group">
+									<div class="input-group-text">{{ entry_min }}</div>
+									<input type="number" name="module_tmd_cmafilter_price_min" value="{{ module_tmd_cmafilter_price_min }}" placeholder="{{ entry_default_price }}" id="input-price-min" class="form-control"/>
+								  </div>
+								</div>
+								<div class="col-sm-6">
+								  <div class="input-group">
+									<div class="input-group-text">{{ entry_max }}</div>
+									<input type="number" name="module_tmd_cmafilter_price_max" value="{{ module_tmd_cmafilter_price_max }}" placeholder="{{ entry_default_price }}" id="input-price-max" class="form-control"/>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+
+						<div class="tab-pane" id="tab-language">
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_heading_title }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][heading_title]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].heading_title }}" placeholder="{{ entry_heading_title }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_button_filter }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][button_filter]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].button_filter }}" placeholder="{{ entry_button_filter }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_category }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][category]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].category }}" placeholder="{{ entry_category }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_sb_category }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][sb_category]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].sb_category }}" placeholder="{{ entry_sb_category }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_ssb_category }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][ssb_category]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].ssb_category }}" placeholder="{{ entry_ssb_category }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_brand }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][brand]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].brand }}" placeholder="{{ entry_brand }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_attributes }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][attributes]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].attributes }}" placeholder="{{ entry_attributes }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_search_input }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][search]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].search }}" placeholder="{{ entry_search_input }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  <div class="row mb-3">
+							<label class="col-sm-2 col-form-label">{{ entry_price_range }}</label>
+							<div class="col-sm-10">
+							  <div class="row">
+								{% for language in languages %}
+								<div class="col-sm-12">
+								  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+									<input type="text" name="module_tmd_cmafilter_language[{{ language.language_id }}][price_range]" value="{{ module_tmd_cmafilter_language[language.language_id] ? module_tmd_cmafilter_language[language.language_id].price_range }}" placeholder="{{ entry_price_range }}" class="form-control" />
+								  </div>
+								</div>
+								{% endfor %}
+							  </div>
+							</div>
+						  </div>
+						  
+						</div>
+
+						<div class="tab-pane" id="tab-color">
+							<div class="row mb-3">
+								<div class="col-sm-6">
+									<div class="row">
+										<label class="col-sm-4 col-form-label" for="input-h1-bg-color">{{ entry_heading_bgcolor }}</label>
+										<div class="col-sm-8">
+											<input type="text" name="module_tmd_cmafilter_heading_bgcolor" value="{{ module_tmd_cmafilter_heading_bgcolor }}" id="input-h1-bg-color" placeholder="{{ entry_heading_bgcolor }}" class="form-control color" />
+										</div>
+									</div>
+								</div>
+								
+								<div class="col-sm-6">
+									<div class="row">
+										<label class="col-sm-4 col-form-label" for="input-bg-color">{{ entry_title_color }}</label>
+										<div class="col-sm-8">
+											<input type="text" name="module_tmd_cmafilter_title_color" value="{{ module_tmd_cmafilter_title_color }}" id="input-bg-color" placeholder="{{ entry_title_color }}" class="form-control color" />
+										</div>
+									</div>
+								</div>
+							</div>
+							  
+							<div class="row mb-3">
+								<div class="col-sm-6">
+									<div class="row">
+										<label class="col-sm-4 col-form-label" for="input-text-color">{{ entry_text_color }}</label>
+										<div class="col-sm-8">
+											<input type="text" name="module_tmd_cmafilter_text_color" value="{{ module_tmd_cmafilter_text_color }}" id="input-text-colo" placeholder="{{ entry_text_color }}" class="form-control color" />
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="row">
+										<label class="col-sm-4 col-form-label" for="input-bg-color">{{ entry_bgcolor }}</label>
+										<div class="col-sm-8">
+											<input type="text" name="module_tmd_cmafilter_btn_bg_color" value="{{ module_tmd_cmafilter_btn_bg_color }}" id="input-bg-color" placeholder="{{ entry_bgcolor }}" class="form-control color" />
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script src="{{ HTTP_CATALOG }}extension/megafilterpack/admin/view/javascript/colorbox/jquery.minicolors.js"></script>
+<link rel="stylesheet" href="{{ HTTP_CATALOG }}extension/megafilterpack/admin/view/stylesheet/jquery.minicolors.css"/>
+<script type="text/javascript"><!--
+$(document).ready( function() {
+  $('.color').each( function() {
+    $(this).minicolors({
+      control: $(this).attr('data-control') || 'hue',
+      defaultValue: $(this).attr('data-defaultValue') || '',
+      inline: $(this).attr('data-inline') === 'true',
+      letterCase: $(this).attr('data-letterCase') || 'lowercase',
+      opacity: $(this).attr('data-opacity'),
+      position: $(this).attr('data-position') || 'bottom left',
+      change: function(hex, opacity) {
+        if( !hex ) return;
+        if( opacity ) hex += ', ' + opacity;
+        try {
+          console.log(hex);
+        } catch(e) {}
+      },
+      theme: 'bootstrap'
+    });
+  });
+});
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    function toggleSubCategories() {
+        if ($('select[name="module_tmd_cmafilter_category"]').val() === 'yes') {
+            $('#sub_cate').show();
+            if ($('select[name="module_tmd_cmafilter_sub_category"]').val() === 'yes') {
+                $('#sub_sub_cate').show();
+            } else {
+                $('#sub_sub_cate').hide();
+            }
+        } else {
+            $('#sub_cate').hide();
+            $('#sub_sub_cate').hide();
+        }
+    }
+
+    $('select[name="module_tmd_cmafilter_category"]').on('change', function() {
+        toggleSubCategories();
+    });
+
+    $('select[name="module_tmd_cmafilter_sub_category"]').on('change', function() {
+        if ($(this).val() === 'yes' && $('select[name="module_tmd_cmafilter_category"]').val() === 'yes') {
+            $('#sub_sub_cate').show();
+        } else {
+            $('#sub_sub_cate').hide();
+        }
+    });
+
+    // Trigger change event on page load to set initial state
+    toggleSubCategories();
+});
+
+</script>
+
+<style type="text/css"> 
+#form-tmd-megafilter .nav-tabs {
+	gap:2px;
+}
+#form-tmd-megafilter .nav-tabs li a {
+	background:#f5f5f5;
+	border-color:#f5f5f5;
+	color: #333;
+	font-weight: 600;
+	border-radius: 0;
+}
+#form-tmd-megafilter .nav-tabs li a.active {
+	background: #1C95DE;
+	border-color: #1C95DE;
+	color:#fff;
+}
+#form-tmd-megafilter .minicolors-theme-bootstrap .minicolors-input {
+	width:100%;
+}
+</style>
+
+</div>
+{{ footer }}
